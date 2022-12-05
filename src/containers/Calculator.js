@@ -9,6 +9,7 @@ function App() {
   const [previousOperator, setPreviousOperator] = useState(null); 
   const [newTotal, setNewTotal] = useState(true);
   const [calculatedTotal, setCalculatedTotal] = useState(0);
+  const [errorFlagged, setErrorFlagged] = useState(false);
 
   const numberClick =  (number) => {
 
@@ -24,11 +25,13 @@ function App() {
     }
 
     setRunningTotal(parseFloat("" + tempTotal + number));
+    setErrorFlagged(false);
   }
 
   const handleDecimal = () => {
     if(!runningTotal.toString().includes("."))
     setRunningTotal(runningTotal + ".")
+    setErrorFlagged(false);
   }
 
   const clearClick = () => {
@@ -38,9 +41,11 @@ function App() {
       setCalculatedTotal(0);
     }
     setRunningTotal(0);
+    setErrorFlagged(false);
   }
 
   const operatorClick = (operator) => {
+    setErrorFlagged(false);
     // if there was a previous operator recorded as having been clicked, perform
       // the operation for the previous operator
       if (previousTotal && previousOperator) {
@@ -93,7 +98,16 @@ function App() {
   }
 
   const divide = (number) => {
-    let calculatedNumber = parseFloat(previousTotal) / parseFloat(number);
+    const numerator = parseFloat(previousTotal);
+    const denominator = parseFloat(number);
+    if (denominator === 0) {
+      setErrorFlagged(true);
+      setRunningTotal(0);
+      setCalculatedTotal(0);
+      setPreviousTotal(null);
+      return;
+    }
+    const calculatedNumber = numerator / denominator;
     setRunningTotal(calculatedNumber);
     setCalculatedTotal(calculatedNumber);
   }
@@ -102,7 +116,7 @@ function App() {
   return (
     <div className="container">
     <div className="calculator">
-      <div data-testid="running-total" id="running-total" className="display">{ runningTotal }</div>
+      <div data-testid="running-total" id="running-total" className="display">{ errorFlagged ? "ERROR" : runningTotal }</div>
       <KeyPad 
       handleNumber={numberClick} 
       handleOperator={operatorClick} 

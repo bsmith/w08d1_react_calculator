@@ -110,6 +110,28 @@ describe("Calculator", () => {
     });
 
     /* QUESTION: "What does the code do in exceptional circumstances? Specifically, if you divide by zero, what is the effect? Write a test to describe what you'd prefer to happen, and then correct the code to make that test pass (you will need to modify the Calculator model to meet this requirement)." */
-    })
+    /* Currently, if you divide by zero it displays 'Infinity' and stores it in the totals.
+       This means if you then do a calculation it also displays Infinity.
+       I want it to display "ERROR" on the screen, and treat the total as zero */
+    it('should display ERROR when dividing by zero', () => {
+        cy.get('#number5').click();
+        cy.get('#operator-divide').click();
+        cy.get('#number0').click();
+        cy.get('#operator-equals').click();
+        cy.get('.display').should('contain', 'ERROR');
+    });
+
+    it('should be able to continue after an ERROR', () => {
+        cy.get('#number5').click();
+        cy.get('#operator-divide').click();
+        cy.get('#number0').click();
+        cy.get('#operator-equals').click();
+        cy.get('.display').should('contain', 'ERROR');
+        cy.get('#number1').click();
+        cy.get('#operator_add').click();
+        cy.get('#number2').click();
+        cy.get('#operator-equals').click();
+        cy.get('.display').should('contain', '3');
+    });
 
 })
